@@ -1,0 +1,8 @@
+jupyter
+matplotlib
+seaborn
+yfinance
+pandas
+numpy
+scipy
+brokenaxes
