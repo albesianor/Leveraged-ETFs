@@ -1,6 +1,6 @@
 import numpy as np
 
-def simulate_gbm(S0, mu, sigma, T, N, n_paths, leverage):
+def simulate_gbm(S0, mu, sigma, T, N, n_paths, leverage, S_power=1):
     # simulate n_paths many paths from 0 to T of GBM with parameters mu and sigma
     dt = T / N
     times = np.linspace(0, T, N + 1)
@@ -22,7 +22,7 @@ def simulate_gbm(S0, mu, sigma, T, N, n_paths, leverage):
         + logL[:, :1]
     )
 
-    S_end = np.exp(logS[:, N])
+    S_end = np.exp(S_power * logS[:, N])
     L_end = np.exp(logL[:, N])
     L_end[np.isnan(L_end)] = 0
 
