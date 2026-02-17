@@ -7,7 +7,7 @@ def simulate_gbm(S0, mu, sigma, T, N, n_paths, leverage, S_power=1):
 
     Z = np.random.randn(n_paths, N)
 
-    drift = mu - (1 / 2) * (sigma**2) * dt
+    drift = (mu - (1 / 2) * (sigma**2)) * dt
     diffusion = sigma * np.sqrt(dt) * Z
 
     logS = np.zeros((n_paths, N + 1))
