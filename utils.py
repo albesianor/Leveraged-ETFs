@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-def simulate_gbm(S0=1, mu=0, sigma=0.1, T=5, N=None, n_paths=10_000, leverage=2):
+def simulate_gbm(S0=1, mu=0, sigma=0.1, T=5, N=None, n_paths=10_000, leverage=2, return_mean_std=False):
     '''
     Simulate P&L of n_paths GBM portfolios of 1 long leveraged ETF and 1 short underlying
 
@@ -13,6 +13,7 @@ def simulate_gbm(S0=1, mu=0, sigma=0.1, T=5, N=None, n_paths=10_000, leverage=2)
     N: number of updates (default=T)
     n_paths: number of simulated paths (default=10_000)
     leverage: leverage (default=2)
+    return_mean_std: if true, returns mean and std, otherwise returns distribution
 
     Output:
     Distribution of the portfolio at time T: L_end - S_end
@@ -44,7 +45,12 @@ def simulate_gbm(S0=1, mu=0, sigma=0.1, T=5, N=None, n_paths=10_000, leverage=2)
     L_end = np.exp(logL[:, N])
     L_end[np.isnan(L_end)] = 0
 
-    return L_end - S_end
+    PnL = L_end - S_end
+
+    if return_mean_std:
+        return PnL.mean(), PnL.std()
+
+    return PnL
 
 
 def mean_diff(S0=1, mu=0, sigma=0.1, T=5, N=None, n_paths=10_000, leverage=2):
@@ -115,8 +121,7 @@ def lev_sigma_mean_std(
     if freq != 1:
         N = int(T*freq)
 
-    mean = np.vectorize(mean_diff)(S0=1, mu=mu, sigma=sigma, T=T, N=N, n_paths=n_paths, leverage=leverage)
-    std = np.vectorize(std_diff)(S0=1, mu=mu, sigma=sigma, T=T, N=N, n_paths=n_paths, leverage=leverage)
+    mean, std = np.vectorize(simulate_gbm)(S0=1, mu=mu, sigma=sigma, T=T, N=N, n_paths=n_paths, leverage=leverage, return_mean_std=True)
 
     return pd.DataFrame(
         {"leverage": leverage.ravel(), "sigma": sigma.ravel(), "mean": mean.ravel(), "std": std.ravel()}
