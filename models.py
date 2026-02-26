@@ -38,7 +38,7 @@ def generate_model(degree=2, split_quartic=False, take_log=False):
     pipeline = []
 
     if degree >= 2:
-        pipeline.append(("poly", PolynomialFeatures(degree=degree)))
+        pipeline.append(("poly", PolynomialFeatures(degree=degree).set_output(transform="pandas")))
 
     if degree == 4 and split_quartic:
         pipeline.append(
