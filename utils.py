@@ -97,7 +97,7 @@ def std_diff(S0=1, mu=0, sigma=0.1, T=5, N=None, n_paths=10_000, leverage=2):
 
 def lev_sigma_mean_std(
     mu=0,
-    sigmas=np.linspace(0.01, 0.4, 100),
+    sigmas=np.linspace(0.01, 0.6, 100),
     T=5,
     freq=1,
     n_paths=10_000,
@@ -109,7 +109,7 @@ def lev_sigma_mean_std(
 
     Input:
     mu: drift (default=0)
-    sigmas: range of volatilities (default=np.linspace(0.01, 0.4, 100))
+    sigmas: range of volatilities (default=np.linspace(0.01, 0.6, 100))
     T: time in days (default=5)
     freq: updates/day (default=1)
     n_paths: number of simulated paths (default=10_000)
