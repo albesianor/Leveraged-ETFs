@@ -3,9 +3,9 @@ Models implementations
 """
 
 import numpy as np
-from sklearn.preprocessing import PolynomialFeatures
+from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 from sklearn.compose import TransformedTargetRegressor
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, Lasso
 from sklearn.pipeline import Pipeline
 from sklearn.base import BaseEstimator, TransformerMixin
 
@@ -27,7 +27,7 @@ class FeatureDropper(BaseEstimator, TransformerMixin):
         return X.drop(columns=self.features_to_drop)
 
 
-def generate_model(degree=2, split_quartic=False, take_log=False):
+def generate_model(degree=2, split_quartic=False, take_log=False, lasso=None):
     '''
     Generates a sklearn pipeline representing the model with the given specifications.
 
@@ -66,18 +66,29 @@ def generate_model(degree=2, split_quartic=False, take_log=False):
             )
         )
 
+    if lasso:
+        pipeline.append(
+            (
+                "scaler",
+                StandardScaler()
+            )
+        )
+        regressor = Lasso(alpha=lasso, fit_intercept=False)
+    else:
+        regressor = LinearRegression(fit_intercept=False)
+
     if take_log:
         pipeline.append(
             (
                 "log_linear",
                 TransformedTargetRegressor(
-                    regressor=LinearRegression(fit_intercept=False),
+                    regressor=regressor,
                     func=np.log1p,
                     inverse_func=np.expm1,
                 ),
             )
         )
     else:
-        pipeline.append(("linear", LinearRegression(fit_intercept=False)))
+        pipeline.append(("linear", regressor))
 
     return Pipeline(pipeline)
