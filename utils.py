@@ -4,6 +4,7 @@ GBM simulation and dataset generation functions
 
 import numpy as np
 import pandas as pd
+import math
 
 def simulate_gbm(S0=1, mu=0, sigma=0.1, T=5, N=None, n_paths=10_000, leverage=2, return_mean_std=False):
     '''
@@ -11,8 +12,8 @@ def simulate_gbm(S0=1, mu=0, sigma=0.1, T=5, N=None, n_paths=10_000, leverage=2,
 
     Input:
     S0: starting price of underlying (default=1)
-    mu: drift (default=0)
-    sigma: volatility (default=0.4)
+    mu: yearly drift (default=0)
+    sigma: yearly volatility (default=0.4)
     T: time in days (default=5)
     N: number of updates (default=T)
     n_paths: number of simulated paths (default=10_000)
@@ -22,6 +23,10 @@ def simulate_gbm(S0=1, mu=0, sigma=0.1, T=5, N=None, n_paths=10_000, leverage=2,
     Output:
     Distribution of the portfolio at time T: L_end - S_end
     '''
+
+    # change yearly drift and volatility into daily
+    mu = mu / 252
+    sigma = sigma / math.sqrt(252)
 
     if N is None:
         N = T
