@@ -7,10 +7,12 @@
 - price lETF
 - hedge lETF
 
-## March 11 2026
+## March 12 2026
 - test model on unseen tickers
-- run modelling for different portfolio lifespans (instead of just 5 days) - keep it in the range 1-10 days
 - make a calculator that outputs leverage factor (and possibly window span) to achieve desired portfolio volatility
+- add documentation to make it readable and followable
+- rearrange notebooks 08 and 09 to adapt it to eventual portfolio lifespan variation
+- go back and run modelling for different portfolio lifespans (instead of just 5 days) - keep it in the range 1-10 days
 
 ## Future
 - taking into consideration market drift, we can model expected returns as well as portfolio volatility
