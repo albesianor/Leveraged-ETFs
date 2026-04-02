@@ -3,6 +3,7 @@ Models implementations
 """
 
 import numpy as np
+import pandas as pd
 from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 from sklearn.compose import TransformedTargetRegressor
 from sklearn.linear_model import LinearRegression, Lasso
@@ -90,5 +91,33 @@ def generate_model(degree=2, split_quartic=False, take_log=False, lasso=None):
         )
     else:
         pipeline.append(("linear", regressor))
+
+    return Pipeline(pipeline)
+
+
+# theory-based model (fixed time horizon): std ~ vol * (lev - 1)
+class TheoreticalFeatures(BaseEstimator, TransformerMixin):
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        return pd.DataFrame(X["sigma"] * (X["leverage"] - 1))
+
+def theoretical_model(take_log=False):
+    pipeline = [("theoretical_features", TheoreticalFeatures())]
+
+    if take_log:
+        pipeline.append(
+            (
+                "log_linear",
+                TransformedTargetRegressor(
+                    regressor=LinearRegression(fit_intercept=False),
+                    func=np.log1p,
+                    inverse_func=np.expm1,
+                ),
+            )
+        )
+    else:
+        pipeline.append(("linear", LinearRegression(fit_intercept=False)))
 
     return Pipeline(pipeline)
