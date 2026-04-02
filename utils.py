@@ -168,7 +168,7 @@ def lev_sigma_mean_std(
 def lev_sigma_duration_mean_std(
     mu=0,
     sigmas=np.linspace(0.01, 0.6, 100),
-    durations=[1, 2, 3, 4, 5, 10, 15, 21, 42, 63, 84, 105, 126, 147, 168, 189, 210, 231, 252],
+    durations=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
     n_paths=10_000,
     leverages=np.linspace(1.01, 3, 100),
 ):
@@ -179,7 +179,7 @@ def lev_sigma_duration_mean_std(
     Input:
     mu: drift (default=0)
     sigmas: range of volatilities (default=np.linspace(0.01, 0.6, 100))
-    durations: time in days (default=[1, 2, 3, 4, 5, 10, 15, 21, 42, 63, 84, 105, 126, 147, 168, 189, 210, 231, 252])
+    durations: time in days (default=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
     n_paths: number of simulated paths (default=10_000)
     leverages: range of leverage factors (default=np.linspace(1.01, 3, 100))
 
