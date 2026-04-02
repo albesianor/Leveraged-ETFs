@@ -4,8 +4,8 @@ Models implementations
 
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import PolynomialFeatures, StandardScaler
-from sklearn.compose import TransformedTargetRegressor
+from sklearn.preprocessing import PolynomialFeatures, StandardScaler, OneHotEncoder
+from sklearn.compose import TransformedTargetRegressor, ColumnTransformer
 from sklearn.linear_model import LinearRegression, Lasso
 from sklearn.pipeline import Pipeline
 from sklearn.base import BaseEstimator, TransformerMixin
@@ -96,15 +96,15 @@ def generate_model(degree=2, split_quartic=False, take_log=False, lasso=None):
 
 
 # theory-based model (fixed time horizon): std ~ vol * (lev - 1)
-class TheoreticalFeatures(BaseEstimator, TransformerMixin):
+class TheoreticalFeaturesFixed(BaseEstimator, TransformerMixin):
     def fit(self, X, y=None):
         return self
 
     def transform(self, X):
         return pd.DataFrame(X["sigma"] * (X["leverage"] - 1))
 
-def theoretical_model(take_log=False):
-    pipeline = [("theoretical_features", TheoreticalFeatures())]
+def theoretical_model_fixed(take_log=False):
+    pipeline = [("theoretical_features_fixed", TheoreticalFeaturesFixed())]
 
     if take_log:
         pipeline.append(
@@ -121,3 +121,30 @@ def theoretical_model(take_log=False):
         pipeline.append(("linear", LinearRegression(fit_intercept=False)))
 
     return Pipeline(pipeline)
+
+# theory-based model (variable time horizon): std ~ vol * sqrt(duration) * (lev - 1)
+class TheoreticalFeatures(BaseEstimator, TransformerMixin):
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        return pd.DataFrame(X["sigma"] * np.sqrt(X["duration"] * (X["leverage"] - 1)))
+
+def theoretical_model_onehot():
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ("sigma_leverage", TheoreticalFeaturesFixed(), ["sigma", "leverage"]),
+            ("duration", OneHotEncoder(drop="first"), ["duration"])
+        ]
+    )
+
+    return Pipeline([
+        ("preprocessor", preprocessor),
+        ("linear", LinearRegression(fit_intercept=False))
+    ])
+
+def theoretical_model_variable():
+    return Pipeline([
+        ("theoretical_features", TheoreticalFeatures()),
+        ("linear", LinearRegression(fit_intercept=False))
+    ])
