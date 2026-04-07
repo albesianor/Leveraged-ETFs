@@ -122,19 +122,19 @@ def theoretical_model_fixed(take_log=False):
 
     return Pipeline(pipeline)
 
-# theory-based model (variable time horizon): std ~ vol * sqrt(duration) * (lev - 1)
+# theory-based model (variable time horizon): std ~ vol * sqrt(horizon) * (lev - 1)
 class TheoreticalFeatures(BaseEstimator, TransformerMixin):
     def fit(self, X, y=None):
         return self
 
     def transform(self, X):
-        return pd.DataFrame(X["sigma"] * np.sqrt(X["duration"] * (X["leverage"] - 1)))
+        return pd.DataFrame(X["sigma"] * np.sqrt(X["horizon"] * (X["leverage"] - 1)))
 
 def theoretical_model_onehot():
     preprocessor = ColumnTransformer(
         transformers=[
             ("sigma_leverage", TheoreticalFeaturesFixed(), ["sigma", "leverage"]),
-            ("duration", OneHotEncoder(drop="first"), ["duration"])
+            ("horizon", OneHotEncoder(drop="first"), ["horizon"])
         ]
     )
 
