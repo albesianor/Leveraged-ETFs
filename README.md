@@ -92,7 +92,7 @@ If you want to run the parquet-based historical-data notebooks from scratch, you
 
 - This is an exploratory research repo, not a production-ready trading system.
 - The synthetic analysis relies heavily on GBM assumptions.
-- The historical backtests use synthetic leveraged return construction from underlying ETF prices rather than observed LETF fund data.
+- The historical backtests use synthetic leveraged return constructed from underlying ETF prices rather than observed LETF fund data.
 - The focus is on short holding periods, not long-term portfolio construction.
 - The current framing emphasizes volatility of P&L more than expected return forecasting.
 
@@ -100,7 +100,5 @@ If you want to run the parquet-based historical-data notebooks from scratch, you
 
 Natural follow-ups include:
 
-- testing the model on additional unseen tickers,
-- building a simple calculator that maps target volatility to leverage factor and horizon,
 - extending the framework to include expected return, Sharpe ratio, or drift assumptions,
 - exploring pricing and hedging
