@@ -14,7 +14,7 @@ In this project we conduct:
 Across the synthetic experiments and the historical backtests, the clearest and most stable signal is in the standard deviation of portfolio P&L rather than in mean P&L. The modeling work in this repo eventually focuses on a simple relationship of the form
 
 
-$$\sigma_{\text{portfolio}} \approx a \sqrt{d}\,\sigma\,(L - 1),$$
+$$\sigma_{\text{portfolio}} \approx a (L - 1) \sigma \sqrt{d},$$
 
 where:
 
