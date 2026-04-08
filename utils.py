@@ -165,21 +165,21 @@ def lev_sigma_mean_std(
     )
 
 
-def lev_sigma_duration_mean_std(
+def lev_sigma_horizon_mean_std(
     mu=0,
     sigmas=np.linspace(0.01, 0.6, 100),
-    durations=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+    horizons=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
     n_paths=10_000,
     leverages=np.linspace(1.01, 3, 100),
 ):
     """
     Simulate P&L mean and std of n_paths of GBM portfolios of 1 long leveraged ETF and 1 short underlying,
-    with volatility ranging in sigmas, leverage ranging in leverages, and hold duration ranging in durations.
+    with volatility ranging in sigmas, leverage ranging in leverages, and holding horizon ranging in horizons.
 
     Input:
     mu: drift (default=0)
     sigmas: range of volatilities (default=np.linspace(0.01, 0.6, 100))
-    durations: time in days (default=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+    horizons: time in days (default=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
     n_paths: number of simulated paths (default=10_000)
     leverages: range of leverage factors (default=np.linspace(1.01, 3, 100))
 
@@ -187,14 +187,14 @@ def lev_sigma_duration_mean_std(
     Pandas dataframe with columns leverage, sigma, mean of P&L, std of P&L
     """
 
-    leverage, sigma, duration = np.meshgrid(leverages, sigmas, durations, indexing="ij")
+    leverage, sigma, horizon = np.meshgrid(leverages, sigmas, horizons, indexing="ij")
 
     mean, std = np.vectorize(simulate_gbm)(
         S0=1,
         mu=mu,
         sigma=sigma,
-        T=duration,
-        N=N,
+        T=horizon,
+        N=None,
         n_paths=n_paths,
         leverage=leverage,
         return_mean_std=True,
@@ -204,7 +204,7 @@ def lev_sigma_duration_mean_std(
         {
             "leverage": leverage.ravel(),
             "sigma": sigma.ravel(),
-            "duration": duration.ravel(),
+            "horizon": horizon.ravel(),
             "mean": mean.ravel(),
             "std": std.ravel(),
         }
