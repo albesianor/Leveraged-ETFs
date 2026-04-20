@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quant Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body, html { height: 100%; margin: 0; }
+        body { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            background-color: #f8f9fa; 
+        }
+        .calculator-card { 
+            width: 100%; 
+            max-width: 600px; 
+            padding: 2rem; 
+            background: white; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+        }
+        .radio-label { font-weight: bold; cursor: pointer; }
+        input:disabled { font-weight: bold; color: #000 !important; background-color: #e9ecef !important; border: 1px solid #ced4da; }
+
+        /* Visual feedback for input range validity */
+        input.in-range:focus {
+            box-shadow: 0 0 0 0.25rem rgba(13,110,253,0.35);
+            border-color: #0d6efd;
+        }
+        input.in-range:disabled {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.18);
+        }
+        input.out-of-range:focus {
+            box-shadow: 0 0 0 0.25rem rgba(220,53,69,0.35);
+            border-color: #dc3545;
+        }
+        input.out-of-range:disabled {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.2rem rgba(220,53,69,0.18);
+        }
+
+        #explanation { 
+            display: none; 
+            margin-top: 20px; 
+            padding: 15px; 
+            background-color: #f1f3f5; 
+            border-radius: 5px; 
+            font-size: 0.9rem;
+            
+            /* Animation settings */
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out;
+        }
+
+        #explanation.show {
+            display: block;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+<main class="container">
+    <section class="row justify-content-center">
+        <div class="col-12 calculator-card">
+            <h2 class="mb-4 text-center">Quant Calculator</h2>
+            
+            <form id="calcForm">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="solveFor" id="radio-leverage" value="leverage" onchange="calculate()">
+                            <label class="form-check-label radio-label" for="radio-leverage">Leverage</label>
+                        </div>
+                        <input type="number" class="form-control" id="leverage" min="1" max="3" step="0.01" oninput="calculate()">
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="solveFor" id="radio-volatility" value="volatility" onchange="calculate()">
+                            <label class="form-check-label radio-label" for="radio-volatility">Volatility</label>
+                        </div>
+                        <input type="number" class="form-control" id="volatility" min="0" max="0.6" step="0.01" oninput="calculate()">
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="solveFor" id="radio-horizon" value="horizon" onchange="calculate()">
+                            <label class="form-check-label radio-label" for="radio-horizon">Horizon</label>
+                        </div>
+                        <input type="number" class="form-control" id="horizon" min="0" max="10" step="1" oninput="calculate()">
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="solveFor" id="radio-portfolio_volatility" value="portfolio_volatility" onchange="calculate()" checked>
+                            <label class="form-check-label radio-label" for="radio-portfolio_volatility">Portfolio Volatility</label>
+                        </div>
+                        <input type="number" class="form-control" id="portfolio_volatility" min="0" step="0.01" oninput="calculate()">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="text-center mt-3">
+            <a href="#" onclick="toggleExplanation(); return false;">Toggle explanation</a>
+        </div>
+
+        <div id="explanation" class="col-8">
+            <p>This is the explanation section. You can describe the formulas used in the calculator here, along with any relevant academic context or variable definitions.</p>
+        </div>
+    </section>
+</main>
+
+<script>
+    window.onload = function() {
+        document.getElementById('leverage').value = 2;
+        document.getElementById('horizon').value = 5;
+        document.getElementById('volatility').value = 0.3;
+        calculate();
+    };
+
+    function calculate() {
+        const unknown = document.querySelector('input[name="solveFor"]:checked').value;
+        const inputs = ['leverage', 'volatility', 'horizon', 'portfolio_volatility'];
+        
+        inputs.forEach(id => {
+            document.getElementById(id).disabled = (id === unknown);
+        });
+
+        const vals = {
+            leverage: parseFloat(document.getElementById('leverage').value) || 0,
+            volatility: parseFloat(document.getElementById('volatility').value) || 0,
+            horizon: parseFloat(document.getElementById('horizon').value) || 0,
+            portfolio_volatility: parseFloat(document.getElementById('portfolio_volatility').value) || 0
+        };
+
+        let result = 0;
+        if (unknown === 'leverage') result = vals.volatility + vals.horizon; 
+        else if (unknown === 'volatility') result = vals.leverage * vals.horizon;
+        else if (unknown === 'horizon') result = vals.leverage / (vals.volatility || 1);
+        else result = vals.leverage * vals.volatility * vals.horizon;
+
+        document.getElementById(unknown).value = isNaN(result) ? "" : result.toFixed(4);
+    }
+
+    function toggleExplanation() {
+        const exp = document.getElementById('explanation');
+        
+        if (exp.classList.contains('show')) {
+            // Fade out
+            exp.classList.remove('show');
+            // Wait for transition to finish before hiding
+            setTimeout(() => { exp.style.display = 'none'; }, 400);
+        } else {
+            // Show and fade in
+            exp.style.display = 'block';
+            setTimeout(() => { exp.classList.add('show'); }, 10);
+        }
+    }
+</script>
+
+</body>
+</html>
