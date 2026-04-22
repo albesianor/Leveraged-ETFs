@@ -66,7 +66,9 @@
 <main class="container">
     <section class="row justify-content-center">
         <div class="col-12 calculator-card">
-            <h2 class="mb-4 text-center">Quant Calculator</h2>
+            <h2 class="mb-4 text-center">Leveraged portfolio calculator</h2>
+
+            <div class="text-center">Portfolio = one long leveraged - one short underlying</div><br/>
             
             <form id="calcForm">
                 <div class="row">
@@ -94,7 +96,7 @@
                     <div class="col-6 mb-3">
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="solveFor" id="radio-portfolio_volatility" value="portfolio_volatility" onchange="calculate()" checked>
-                            <label class="form-check-label radio-label" for="radio-portfolio_volatility">Portfolio Volatility</label>
+                            <label class="form-check-label radio-label" for="radio-portfolio_volatility">Portfolio volatility</label>
                         </div>
                         <input type="number" class="form-control" id="portfolio_volatility" min="0" step="0.01" oninput="calculate()">
                     </div>
@@ -106,7 +108,7 @@
         </div>
 
         <div id="explanation" class="col-8">
-            <p>This is the explanation section. You can describe the formulas used in the calculator here, along with any relevant academic context or variable definitions.</p>
+            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fuga impedit dolorum recusandae molestias accusantium iusto, voluptas culpa. Atque nobis necessitatibus rerum eaque nesciunt! Veniam cupiditate deleniti quaerat perspiciatis voluptatum accusamus.</p>
         </div>
     </section>
 </main>
@@ -134,11 +136,13 @@
             portfolio_volatility: parseFloat(document.getElementById('portfolio_volatility').value) || 0
         };
 
+        const coeff = 0.06640026;
+
         let result = 0;
-        if (unknown === 'leverage') result = vals.volatility + vals.horizon; 
-        else if (unknown === 'volatility') result = vals.leverage * vals.horizon;
-        else if (unknown === 'horizon') result = vals.leverage / (vals.volatility || 1);
-        else result = vals.leverage * vals.volatility * vals.horizon;
+        if (unknown === 'leverage') result = 1 + vals.portfolio_volatility / (coeff * (vals.leverage ** 0.5) * vals.volatility); 
+        else if (unknown === 'volatility') result = vals.portfolio_volatility / (coeff * (vals.horizon ** 0.5) * (vals.leverage - 1));
+        else if (unknown === 'horizon') result = (vals.portfolio_volatility / (coeff * vals.volatility * (vals.leverage - 1))) ** 2;
+        else result = coeff * (vals.horizon ** 0.5) * vals.volatility * (vals.leverage - 1);
 
         document.getElementById(unknown).value = isNaN(result) ? "" : result.toFixed(4);
     }
