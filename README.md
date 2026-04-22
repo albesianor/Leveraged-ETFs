@@ -23,6 +23,8 @@ where:
 - `L` is the leverage factor, and
 - `a` is a fitted constant.
 
+See the website https://albesianor.github.io/Leveraged-ETFs/ for a calculator that takes in three of the following variables: portfolio volatility, leverage factor, horizon, or volatility, and outputs the remaining one. For example, one can see how to adjust their leverage factor to maintain a desired portfolio, with fixed underlying volatility and horizon.
+
 ## Note on path dependence
 
 We are aware of Avellaneda--Zhang's paper, [*Path-Dependence of Leveraged ETF Returns*](https://nyuscholars.nyu.edu/en/publications/path-dependence-of-leveraged-etf-returns) (SIAM Journal on Financial Mathematics, 2010, DOI: `10.1137/090760805`), but this repository does **not** attempt to reproduce or directly follow that paper's framework.
